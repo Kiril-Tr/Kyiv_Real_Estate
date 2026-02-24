@@ -12,16 +12,31 @@ def parse_olx():
         
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
-            titles = soup.find_all('h6')
+            ads = soup.find_all('a', href=True)
             
-            for i in range(5):
-                if i < len(titles):
-                    print(f"{i+1}. {titles[i].text}")
+            count = 0
+            for ad in ads:
+                title_element = ad.find('h6')
+                
+                if title_element:
+                    title = title_element.text.strip()
+                    link = ad['href']
+                    
+                    if link.startswith('/'):
+                        link = "https://www.olx.ua" + link
+                        
+                    print(f"📌 {title}")
+                    print(f"🔗 Посилання: {link}")
+                    print("-" * 40)
+                    
+                    count += 1
+                    if count == 5:
+                        break
         else:
             print(f"Status: {response.status_code}")
             
     except Exception as e:
-        print(e)
+        print(f"Помилка: {e}")
 
 if __name__ == "__main__":
     parse_olx()
